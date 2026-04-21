@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registracija</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+    <h2>Registrirajte se</h2>
+    <form action="/register" method="post">
+    <input type="text" name="username" placeholder="username" required>
+    <input type="password" name="password" placeholder="password" required>
+    <button type="submit">Ustvari račun</button>
+    </form>
+    </div>
+    <a id="ZRacunomLink" href="/login">Prijava</a>
+</body>
+</html>
