@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Zapiski</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+<h1>Zapiski</h1>
+<h3>Pozdravljen {{ user }}</h3>
+
+<textarea id="naslov" placeholder="Naslov"></textarea><br>
+<textarea id="vsebina" placeholder="Vsebina"></textarea><br>
+<button onclick="dodaj()">Shrani</button>
+
+<hr>
+
+{% for z in zapiski %}
+<div>
+    <b>{{ z.naslov }}</b>
+    <p>{{ z.vsebina }}</p>
+    <button onclick="izbrisi('{{ z.naslov }}')">Izbriši</button>
+</div>
+{% endfor %}
+
+<br>
+<button onclick="logout()">Logout</button>
+
+<script>
+function dodaj() {
+    let naslov = $("#naslov").val();
+    let vsebina = $("#vsebina").val();
+
+    if (naslov == "" || vsebina == "") {
+        alert("Izpolni vse");
+        return;
+    }
+
+    $.ajax({
+        url: "/dodaj",
+        type: "POST",
+        data: {
+            naslov: naslov,
+            vsebina: vsebina
+        },
+        success: function() {
+            location.reload();
+        }
+    });
+}
+
+function izbrisi(naslov) {
+    $.ajax({
+        url: "/izbrisi",
+        type: "POST",
+        data: {
+            naslov: naslov
+        },
+        success: function() {
+            location.reload();
+        }
+    });
+}
+
+function logout() {
+    window.location.href = "/logout";
+}
+</script>
+
+</body>
+</html>
