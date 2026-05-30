@@ -16,11 +16,20 @@
 <hr>
 
 {% for z in zapiski %}
-<div>
+<div id="zapis-{{ z.naslov }}">
+    <div class="prikaz">
     <b>{{ z.naslov }}</b>
     <p>{{ z.vsebina }}</p>
     <button onclick="izbrisi('{{ z.naslov }}')">Izbriši</button>
-    <button onclick="uredi('{{ z.naslov }}', '{{ z.vsebina }}')">Uredi</button>
+    <button onclick="uredi('{{ z.naslov }}')">Uredi</button> 
+    </div>
+
+    <div class="urejanje" style="display:none;">
+        <input type="text" class="nov-naslov" value="{{ z.naslov }}"><br>
+        <textarea class="nova-vsebina">{{ z.vsebina }}</textarea><br>
+        <button onclick="shraniUredi('{{ z.naslov }}')">Shrani</button>
+        <button onclick="preklici('{{ z.naslov }}')">Prekliči</button>
+    </div>
 </div>
 {% endfor %}
 
@@ -63,18 +72,29 @@ function izbrisi(naslov) {
     });
 }
 
-function uredi(stari_naslov, stara_vsebina) {
-    let nov_naslov = prompt("Naslov:", stari_naslov);
-    let nova_vsebina = prompt("Vsebina:", stara_vsebina);
+function uredi(naslov) {
+    let div = $("#zapis-" + naslov);
+    div.find(".prikaz").hide();
+    div.find(".urejanje").show();
+}
 
+function shraniUredi(stari_naslov) {
+    let div = $("#zapis-" + stari_naslov);
+    let nov_naslov = div.find(".nov-naslov").val();
+    let nova_vsebina = div.find(".nova-vsebina").val();
     if (!nov_naslov || !nova_vsebina) return;
-
     $.ajax({
         url: "/uredi",
         type: "POST",
         data: { stari_naslov: stari_naslov, naslov: nov_naslov, vsebina: nova_vsebina },
         success: function() { location.reload(); }
     });
+}
+
+function preklici(naslov) {
+    let div = $("#zapis-" + naslov);
+    div.find(".urejanje").hide();
+    div.find(".prikaz").show();
 }
 
 function logout() {

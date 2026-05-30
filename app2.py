@@ -1,3 +1,5 @@
+#pip install flask, pip install tinydb, python app2.py
+
 from flask import Flask, render_template
 
 app = Flask(
