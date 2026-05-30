@@ -20,6 +20,7 @@
     <b>{{ z.naslov }}</b>
     <p>{{ z.vsebina }}</p>
     <button onclick="izbrisi('{{ z.naslov }}')">Izbriši</button>
+    <button onclick="uredi('{{ z.naslov }}', '{{ z.vsebina }}')">Uredi</button>
 </div>
 {% endfor %}
 
@@ -59,6 +60,20 @@ function izbrisi(naslov) {
         success: function() {
             location.reload();
         }
+    });
+}
+
+function uredi(stari_naslov, stara_vsebina) {
+    let nov_naslov = prompt("Naslov:", stari_naslov);
+    let nova_vsebina = prompt("Vsebina:", stara_vsebina);
+
+    if (!nov_naslov || !nova_vsebina) return;
+
+    $.ajax({
+        url: "/uredi",
+        type: "POST",
+        data: { stari_naslov: stari_naslov, naslov: nov_naslov, vsebina: nova_vsebina },
+        success: function() { location.reload(); }
     });
 }
 

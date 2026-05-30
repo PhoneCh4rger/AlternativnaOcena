@@ -1,4 +1,4 @@
-# nehi pozablat pip install flask, pip install tinydb, python app1.py
+#pip install flask, pip install tinydb, python app1.py
 
 from flask import Flask, render_template, request, redirect, session
 from tinydb import TinyDB, Query
@@ -60,23 +60,35 @@ def dashboard():
 @app.route("/dodaj", methods=["POST"])
 def dodaj():
     if "user" not in session:
-        return {"status": 401}
+        return redirect("/login")
     naslov = request.form["naslov"]
     vsebina = request.form["vsebina"]
     zapiski.insert({"username": session["user"], "naslov": naslov, "vsebina": vsebina})
-    return {"status": 200}
+    return redirect("/dashboard")
 
 @app.route("/izbrisi", methods=["POST"])
 def izbrisi():
     if "user" not in session:
-        return {"status": 401}
+        return redirect("/login")
     naslov = request.form["naslov"]
     zapiski.remove((Zapisek.username == session["user"]) & (Zapisek.naslov == naslov))
-    return {"status": 200}
+    return redirect("/dashboard")
+
+@app.route("/uredi", methods=["POST"])
+def uredi():
+    if "user" not in session:
+        return redirect("/login")
+    stari_naslov = request.form["stari_naslov"]
+    nov_naslov = request.form["naslov"]
+    nova_vsebina = request.form["vsebina"]
+    zapiski.update(
+        {"naslov": nov_naslov, "vsebina": nova_vsebina},
+        (Zapisek.username == session["user"]) & (Zapisek.naslov == stari_naslov))
+    return redirect("/dashboard")
 
 @app.route("/logout")
 def logout():
     session.clear()
-    return {"status": 200}
+    return redirect("/login")
 
 app.run(debug=True)
