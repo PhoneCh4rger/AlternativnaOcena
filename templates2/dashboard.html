@@ -1,11 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preprosta socialna platforma</title>
+    <title>Socialna platforma</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    
+<div class="container">
+
+    <div class="header">
+        <h2>Pozdravljeni, {{ user }}!</h2>
+    </div>
+
+    <form action="/objavi" method="post" class="forma-objava">
+        <textarea name="vsebina" placeholder="Kaj se dogaja?" required></textarea>
+        <button type="submit">Objavi</button>
+    </form>
+
+    <hr>
+
+    {% if objave %}
+        {% for objava in objave %}
+        <div class="objava">
+
+            <div class="objava-header">
+                <strong>{{ objava.username }}</strong>
+                <span class="cas">{{ objava.cas }}</span>
+            </div>
+
+            <p class="objava-vsebina">{{ objava.vsebina }}</p>
+
+            {% if objava.username == user %}
+            <form action="/izbrisi_objavo" method="post" style="display:inline">
+                <input type="hidden" name="doc_id" value="{{ objava.doc_id }}">
+                <button type="submit" class="btn-izbrisi">Izbriši</button>
+            </form>
+            {% endif %}
+
+            <div class="komentarji" id="komentarji-{{ objava.doc_id }}"></div>
+
+            <div class="komentar-vnos">
+                <input type="text"
+                       id="vnos-{{ objava.doc_id }}"
+                       placeholder="Napiši komentar...">
+                <button onclick="dodajKomentar({{ objava.doc_id }})">Komentiraj</button>
+                <button onclick="nalozKomentarje({{ objava.doc_id }})">Prikaži komentarje</button>
+            </div>
+
+        </div>
+        <hr>
+        {% endfor %}
+    {% else %}
+        <p>Še ni objav. Bodi prvi!</p>
+    {% endif %}
+
+    <hr>
+    <form action="/logout" method="get">
+        <button type="submit">Odjava</button>
+    </form>
+
+</div>
+
+<script>
+function dodajKomentar(objavaId) {
+    const vnos = document.getElementById("vnos-" + objavaId);
+    const besedilo = vnos.value.trim();
+    if (!besedilo) return;
+
+    fetch("/komentar/dodaj", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ objava_id: objavaId, besedilo: besedilo })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            const div = document.getElementById("komentarji-" + objavaId);
+            const p = document.createElement("p");
+            p.classList.add("komentar");
+            p.innerHTML = "<strong>" + data.username + ":</strong> " + data.besedilo;
+            div.appendChild(p);
+            vnos.value = "";
+        }
+    });
+}
+
+function nalozKomentarje(objavaId) {
+    fetch("/komentar/preberi/" + objavaId)
+    .then(r => r.json())
+    .then(data => {
+        const div = document.getElementById("komentarji-" + objavaId);
+        div.innerHTML = "";
+        if (data.length === 0) {
+            div.innerHTML = "<p class='ni-komentarjev'>Še ni komentarjev.</p>";
+            return;
+        }
+        data.forEach(k => {
+            const p = document.createElement("p");
+            p.classList.add("komentar");
+            p.innerHTML = "<strong>" + k.username + ":</strong> " + k.besedilo;
+            div.appendChild(p);
+        });
+    });
+}
+</script>
 </body>
 </html>

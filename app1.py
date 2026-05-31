@@ -53,9 +53,15 @@ def register():
 def dashboard():
     if "user" not in session:
         return redirect("/login")
-    moji_zapiski = zapiski.search(Zapisek.username == session["user"])
-    return render_template("dashboard.html", user=session["user"], zapiski=moji_zapiski)
-
+    kategorija = request.args.get("kategorija", "vse") 
+    if kategorija == "vse":
+        moji_zapiski = zapiski.search(Zapisek.username == session["user"])
+    else:
+        moji_zapiski = zapiski.search(
+            (Zapisek.username == session["user"]) &
+            (Zapisek.kategorija == kategorija)
+        )
+    return render_template("dashboard.html", user=session["user"], zapiski=moji_zapiski, aktivna=kategorija)
 
 @app.route("/dodaj", methods=["POST"])
 def dodaj():
@@ -63,8 +69,11 @@ def dodaj():
         return redirect("/login")
     naslov = request.form["naslov"]
     vsebina = request.form["vsebina"]
-    zapiski.insert({"username": session["user"], "naslov": naslov, "vsebina": vsebina})
+    kategorija = request.form["kategorija"]
+    zapiski.insert({"username": session["user"], "naslov": naslov, "vsebina": vsebina, "kategorija": kategorija})
     return redirect("/dashboard")
+
+
 
 @app.route("/izbrisi", methods=["POST"])
 def izbrisi():
@@ -81,9 +90,11 @@ def uredi():
     stari_naslov = request.form["stari_naslov"]
     nov_naslov = request.form["naslov"]
     nova_vsebina = request.form["vsebina"]
+    nova_kat= request.form["kategorija"]
     zapiski.update(
-        {"naslov": nov_naslov, "vsebina": nova_vsebina},
-        (Zapisek.username == session["user"]) & (Zapisek.naslov == stari_naslov))
+        {"naslov": nov_naslov, "vsebina": nova_vsebina, "kategorija": nova_kat}, 
+        (Zapisek.username == session["user"]) & (Zapisek.naslov == stari_naslov)
+    )
     return redirect("/dashboard")
 
 @app.route("/logout")

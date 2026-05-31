@@ -11,14 +11,25 @@
 
 <textarea id="naslov" placeholder="Naslov"></textarea><br>
 <textarea id="vsebina" placeholder="Vsebina"></textarea><br>
+<select id="kategorija">
+    <option value="sola">Šola</option>
+    <option value="delo">Delo</option>
+    <option value="osebno">Osebno</option>
+</select><br>
 <button onclick="dodaj()">Shrani</button>
 
 <hr>
+
+<button onclick="filtriraj('vse')">Vse</button>
+<button onclick="filtriraj('sola')">Šola</button>
+<button onclick="filtriraj('delo')">Delo</button>
+<button onclick="filtriraj('osebno')">Osebno</button>
 
 {% for z in zapiski %}
 <div id="zapis-{{ z.naslov }}">
     <div class="prikaz">
     <b>{{ z.naslov }}</b>
+    <span>{{ z.kategorija }}</span>
     <p>{{ z.vsebina }}</p>
     <button onclick="izbrisi('{{ z.naslov }}')">Izbriši</button>
     <button onclick="uredi('{{ z.naslov }}')">Uredi</button> 
@@ -27,6 +38,11 @@
     <div class="urejanje" style="display:none;">
         <input type="text" class="nov-naslov" value="{{ z.naslov }}"><br>
         <textarea class="nova-vsebina">{{ z.vsebina }}</textarea><br>
+        <select class="nova-kategorija">
+            <option value="sola"   {% if z.kategorija == 'sola'   %}selected{% endif %}>Šola</option>
+            <option value="delo"   {% if z.kategorija == 'delo'   %}selected{% endif %}>Delo</option>
+            <option value="osebno" {% if z.kategorija == 'osebno' %}selected{% endif %}>Osebno</option>
+        </select><br>
         <button onclick="shraniUredi('{{ z.naslov }}')">Shrani</button>
         <button onclick="preklici('{{ z.naslov }}')">Prekliči</button>
     </div>
@@ -37,9 +53,14 @@
 <button onclick="logout()">Logout</button>
 
 <script>
+function filtriraj(kategorija) {
+    window.location.href = "/dashboard?kategorija=" + kategorija;
+}
+
 function dodaj() {
     let naslov = $("#naslov").val();
     let vsebina = $("#vsebina").val();
+    let kategorija = $("#kategorija").val();
 
     if (naslov == "" || vsebina == "") {
         alert("Izpolni vse");
@@ -51,7 +72,8 @@ function dodaj() {
         type: "POST",
         data: {
             naslov: naslov,
-            vsebina: vsebina
+            vsebina: vsebina,
+            kategorija: kategorija
         },
         success: function() {
             location.reload();
@@ -82,11 +104,12 @@ function shraniUredi(stari_naslov) {
     let div = $("#zapis-" + stari_naslov);
     let nov_naslov = div.find(".nov-naslov").val();
     let nova_vsebina = div.find(".nova-vsebina").val();
+    let nova_kat     = div.find(".nova-kategorija").val();
     if (!nov_naslov || !nova_vsebina) return;
     $.ajax({
         url: "/uredi",
         type: "POST",
-        data: { stari_naslov: stari_naslov, naslov: nov_naslov, vsebina: nova_vsebina },
+        data: { stari_naslov: stari_naslov, naslov: nov_naslov, vsebina: nova_vsebina, kategorija: nova_kat},
         success: function() { location.reload(); }
     });
 }
