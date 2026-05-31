@@ -9,7 +9,7 @@ app = Flask(
     static_folder="static1"
 )
 
-app.secret_key="7_eur_down_the_drain_zaigrcokeronemormigrt"
+app.secret_key="Logitech_G502_HERO_😭"
 
 db= TinyDB("db.json")
 users = db.table("users")
@@ -102,4 +102,4 @@ def logout():
     session.clear()
     return redirect("/login")
 
-app.run(debug=True)
+app.run(debug=True, port=5000)

@@ -10,7 +10,7 @@ app = Flask(
     static_folder="static2"
 )
 
-app.secret_key = "nekaj"
+app.secret_key = "malo_manj_noro_dober_kljuc"
 
 db = TinyDB("db.json")
 users = db.table("users2")

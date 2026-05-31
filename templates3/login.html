@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Prijavite se</h2>
+        <form action="/login" method="post">
+            <input type="text" name="username" placeholder="Uporabniško ime" required><br>
+            <input type="password" name="password" placeholder="Geslo" required><br>
+            <button type="submit">Prijava</button>
+        </form>
+        {% if napaka %}
+            <p>{{ napaka }}</p>
+        {% endif %}
+        <a href="/register">Še nimaš računa?</a><br>
+        <a href="/pozabljeno">Pozabljeno geslo?</a>
+    </div>
+</body>
+</html>

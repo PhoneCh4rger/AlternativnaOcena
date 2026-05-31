@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dnevnik filmov :D</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+<h1>Dnevnik filmov :D</h1>
+<h3>Pozdravljen, {{ user }}</h3>
+
+<input type="text" id="iskanje" placeholder="Išči film...">
+<button onclick="isci()">Išči</button>
+
+<div id="rezultati"></div>
+
+<hr>
+
+<button onclick="window.location.href='/dashboard?filter=vse'">Vsi</button>
+<button onclick="window.location.href='/dashboard?filter=gledano'">Gledano</button>
+<button onclick="window.location.href='/dashboard?filter=želim gledati'">Želim gledati</button>
+
+<hr>
+
+{% if filmi %}
+    {% for film in filmi %}
+    <div>
+        {% if film.slika %}
+            <img src="{{ film.slika }}" width="80"><br>
+        {% endif %}
+        <b>{{ film.naslov }}</b>
+        <span>| Ocena filma: {{ film.ocena }}</span>
+        <span>— {{ film.status }}</span>
+
+        <form action="/status" method="post" style="display:inline">
+            <input type="hidden" name="tmdb_id" value="{{ film.tmdb_id }}">
+            {% if film.status == "želim gledati" %}
+                <input type="hidden" name="status" value="gledano">
+                <button type="submit">Označi kot gledano</button>
+            {% else %}
+                <input type="hidden" name="status" value="želim gledati">
+                <button type="submit">Premakni v želim gledati</button>
+            {% endif %}
+        </form>
+
+        <form action="/izbrisi" method="post" style="display:inline">
+            <input type="hidden" name="tmdb_id" value="{{ film.tmdb_id }}">
+            <button type="submit">Izbriši</button>
+        </form>
+    </div>
+    <hr>
+    {% endfor %}
+{% else %}
+    <p>Ni filmov. Poišči in dodaj!</p>
+{% endif %}
+
+<br>
+<button onclick="window.location.href='/logout'">Odjava</button>
+
+<script>
+function isci() {
+    let q = $("#iskanje").val();
+    if (!q) return;
+
+    $.ajax({
+        url: "/isci",
+        type: "GET",
+        data: { q: q },
+        success: function(data) {
+            let html = "";
+            data.forEach(function(film) {
+                html += "<div>";
+                if (film.slika) html += "<img src='" + film.slika + "' width='60'><br>";
+                html += "<b>" + film.naslov + "</b>| Ocena filma: " + film.ocena + "<br>";
+                html += "<p>" + film.opis.substring(0, 100) + "...</p>";
+                html += "<form action='/dodaj' method='post'>";
+                html += "<input type='hidden' name='tmdb_id' value='" + film.tmdb_id + "'>";
+                html += "<input type='hidden' name='naslov'  value='" + film.naslov  + "'>";
+                html += "<input type='hidden' name='slika'   value='" + film.slika   + "'>";
+                html += "<input type='hidden' name='ocena'   value='" + film.ocena   + "'>";
+                html += "<button type='submit'>+ Dodaj</button>";
+                html += "</form>";
+                html += "</div><hr>";
+            });
+            $("#rezultati").html(html);
+        }
+    });
+}
+</script>
+
+</body>
+</html>

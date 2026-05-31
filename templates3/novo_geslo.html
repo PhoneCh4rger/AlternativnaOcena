@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo geslo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Nastavi novo geslo</h2>
+        <form action="/novo_geslo" method="post">
+            <input type="password" name="geslo" placeholder="Novo geslo" required><br>
+            <button type="submit">Shrani</button>
+        </form>
+    </div>
+</body>
+</html>

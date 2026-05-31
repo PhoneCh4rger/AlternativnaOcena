@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registracija</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Registrirajte se</h2>
+        <form action="/register" method="post">
+            <input type="text" name="username" placeholder="Uporabniško ime" required><br>
+            <input type="password" name="password" placeholder="Geslo" required><br>
+            <input type="text" name="vprasanje" placeholder="Varnostno vprašanje" required><br>
+            <input type="text" name="odgovor" placeholder="Odgovor" required><br>
+            <button type="submit">Ustvari račun</button>
+        </form>
+        {% if napaka %}
+            <p>{{ napaka }}</p>
+        {% endif %}
+        <a href="/login">Že imaš račun?</a>
+    </div>
+</body>
+</html>

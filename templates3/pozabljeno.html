@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pozabljeno geslo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Pozabljeno geslo</h2>
+        <form action="/pozabljeno" method="post">
+            {% if vprasanje %}
+                <input type="hidden" name="username" value="{{ username }}">
+                <p>Vprašanje: <b>{{ vprasanje }}</b></p>
+                <input type="text" name="odgovor" placeholder="Odgovor" required><br>
+            {% else %}
+                <input type="text" name="username" placeholder="Uporabniško ime" required><br>
+            {% endif %}
+            <button type="submit">Potrdi</button>
+        </form>
+        {% if napaka %}
+            <p>{{ napaka }}</p>
+        {% endif %}
+        <a href="/login">Nazaj na prijavo</a>
+    </div>
+</body>
+</html>
