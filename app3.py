@@ -67,20 +67,20 @@ def logout():
 @app.route("/pozabljeno", methods=["GET", "POST"])
 def pozabljeno():
     if request.method == "POST":
-        username = request.form["username"]
+        username = request.form.get("username", "")
         user = users.get(User.username == username)
-
         if "odgovor" not in request.form or request.form["odgovor"] == "":
             if user:
                 return render_template("pozabljeno.html", vprasanje=user["vprasanje"], username=username)
             return render_template("pozabljeno.html", napaka="Uporabnik ne obstaja.")
 
         odgovor = request.form["odgovor"]
-        if user and user["odgovor"] == odgovor:
+        if user and user["odgovor"].strip().lower() == odgovor.strip().lower():
             session["reset_user"] = username
             return redirect("/novo_geslo")
-        return render_template("pozabljeno.html", napaka="Napačen odgovor.", vprasanje=user["vprasanje"])
-
+        if user:
+            return render_template("pozabljeno.html", napaka="Napačen odgovor.", vprasanje=user["vprasanje"], username=username)
+        return render_template("pozabljeno.html", napaka="Uporabnik ne obstaja.")
     return render_template("pozabljeno.html")
 
 
